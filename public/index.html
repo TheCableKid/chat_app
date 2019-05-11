@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    
+</head>
+
+<body>
+    <div class="container">
+        <br>
+        <div class="jumbotron">
+            <h1 class="display-4">Send Message</h1>
+            <br>
+            <input id="name" class="form-control" placeholder="Name">
+
+            <br>
+            <textarea id="message" class="form-control" placeholder="Your Message Here"></textarea>
+            <br>
+            <button id="send" class="btn btn-success">Send</button>
+        </div>
+        <div id="messages">
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script>
+        var socket = io();
+        socket.on("message", addMessages)
+        $(() => {
+            $("#send").click(() => {
+                console.log("Gotta Send Click")
+                sendMessage({
+                    name: $("#name").val(),
+                    message: $("#message").val()
+                });
+            })
+            getMessages()
+        })
+        function addMessages(message) {
+            $("#messages").append(`
+      <h4> ${message.name} </h4>
+      <p>  ${message.message} </p>`)
+        }
+        function getMessages() {
+            $.get("http://localhost:3000/messages", (data) => {
+                data.forEach(addMessages);
+            })
+        }
+        function sendMessage(message) {
+            $.post("http://localhost:3000/messages", message)
+        }
+    </script>
+</body>
+
+</html>
